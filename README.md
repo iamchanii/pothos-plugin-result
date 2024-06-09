@@ -27,9 +27,9 @@ builder.mutationType({
   fields: (t) => ({
     createPost: t.result({
       type: {
-        createdPost: t.field({ type: PostRef }),
-        allPosts: t.filed({ type: [PostRef] }),
-        currentUser: t.field({ type: UserRef }),
+        createdPost: PostRef,
+        allPosts: [PostRef],
+        currentUser: UserRef,
       },
       nullable: true,
       resolve: () => ({
