@@ -1,0 +1,55 @@
+import {
+	type FieldKind,
+	type FieldRef,
+	RootFieldBuilder,
+	type SchemaTypes,
+} from '@pothos/core';
+
+const fieldBuilderProto =
+	RootFieldBuilder.prototype as PothosSchemaTypes.MutationFieldBuilder<
+		SchemaTypes,
+		unknown,
+		FieldKind
+	>;
+
+function capitalize(s: string) {
+	return `${s.slice(0, 1).toUpperCase()}${s.slice(1)}`;
+}
+
+fieldBuilderProto.result = function (options) {
+	const resultTypeRef = this.builder.objectRef('Unnamed result type');
+
+	const fieldRef = this.field({
+		...options,
+		type: resultTypeRef as never,
+	} as never);
+
+	this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
+		const resultTypeName = `${this.typename}${capitalize(fieldConfig.name)}Result`;
+
+		this.builder.objectRef(resultTypeName).implement({
+			fields: (t) => {
+				const fields: Record<string, FieldRef> = {};
+
+				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
+					fields[fieldName] = t.expose(fieldName as never, {
+						type: fieldRef,
+						nullable:
+							this.builder.defaultFieldNullability || Array.isArray(fieldRef)
+								? { items: true, list: true }
+								: true,
+					});
+				}
+
+				return fields;
+			},
+		});
+
+		this.builder.configStore.associateRefWithName(
+			resultTypeRef,
+			resultTypeName,
+		);
+	});
+
+	return fieldRef;
+};
