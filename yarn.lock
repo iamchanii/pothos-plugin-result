@@ -1802,6 +1802,9 @@ __metadata:
     nanobundle: "npm:^2.1.0"
     typescript: "npm:^5.4.5"
     vitest: "npm:^1.6.0"
+  peerDependencies:
+    "@pothos/core": ^3
+    graphql: ^16 || ^17
   languageName: unknown
   linkType: soft
 

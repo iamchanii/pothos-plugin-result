@@ -3,21 +3,25 @@
 	"organizeImports": {
 		"enabled": true
 	},
+	"files": {
+		"ignore": ["node_modules", "dist", "package.json"]
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true
 		}
 	},
-  "formatter": {
-    "indentWidth": 2,
-    "indentStyle": "tab"
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "jsxQuoteStyle": "double",
-      "semicolons": "always"
-    }
-  }
+	"formatter": {
+		"indentWidth": 2,
+		"indentStyle": "tab",
+		"ignore": ["node_modules", "dist", "package.json"]
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"jsxQuoteStyle": "double",
+			"semicolons": "always"
+		}
+	}
 }
