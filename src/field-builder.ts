@@ -1,9 +1,11 @@
 import {
+	MutationFieldBuilder,
 	type FieldKind,
 	type FieldRef,
-	MutationFieldBuilder,
+	type ImplementableObjectRef,
 	type SchemaTypes,
 } from '@pothos/core';
+import type { ResultTypeParam } from './types.js';
 
 const fieldBuilderProto =
 	MutationFieldBuilder.prototype as PothosSchemaTypes.MutationFieldBuilder<
@@ -16,14 +18,12 @@ function capitalize(s: string) {
 	return `${s.slice(0, 1).toUpperCase()}${s.slice(1)}`;
 }
 
-fieldBuilderProto.result = function (options) {
-	const resultTypeRef = this.builder.objectRef('Unnamed result type');
-
-	const fieldRef = this.field({
-		...options,
-		type: resultTypeRef as never,
-	} as never);
-
+function associateResultType(
+	this: typeof fieldBuilderProto,
+	fieldRef: FieldRef<unknown>,
+	resultTypeRef: ImplementableObjectRef<SchemaTypes, unknown, unknown>,
+	type: ResultTypeParam<SchemaTypes>,
+) {
 	this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
 		const resultTypeName = `${this.typename}${capitalize(fieldConfig.name)}Result`;
 
@@ -31,13 +31,12 @@ fieldBuilderProto.result = function (options) {
 			fields: (t) => {
 				const fields: Record<string, FieldRef> = {};
 
-				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
+				for (const [fieldName, fieldRef] of Object.entries(type)) {
 					fields[fieldName] = t.expose(fieldName as never, {
 						type: fieldRef,
-						nullable:
-							this.builder.defaultFieldNullability || Array.isArray(fieldRef)
-								? { items: true, list: true }
-								: true,
+						nullable: Array.isArray(fieldRef)
+							? { items: true, list: true }
+							: true,
 					});
 				}
 
@@ -50,6 +49,17 @@ fieldBuilderProto.result = function (options) {
 			resultTypeName,
 		);
 	});
+}
+
+fieldBuilderProto.result = function (options) {
+	const resultTypeRef = this.builder.objectRef('Unnamed result type');
+
+	const fieldRef = this.field({
+		...options,
+		type: resultTypeRef as never,
+	} as never);
+
+	associateResultType.call(this, fieldRef, resultTypeRef, options.type);
 
 	return fieldRef;
 };
@@ -64,33 +74,7 @@ fieldBuilderProto.resultWithInput = function resultWithInput(options) {
 		type: resultTypeRef as never,
 	} as never);
 
-	this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
-		const resultTypeName = `${this.typename}${capitalize(fieldConfig.name)}Result`;
-
-		this.builder.objectRef(resultTypeName).implement({
-			fields: (t) => {
-				const fields: Record<string, FieldRef> = {};
-
-				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
-					fields[fieldName] = t.expose(fieldName as never, {
-						// @ts-ignore
-						type: fieldRef,
-						nullable:
-							this.builder.defaultFieldNullability || Array.isArray(fieldRef)
-								? { items: true, list: true }
-								: true,
-					});
-				}
-
-				return fields;
-			},
-		});
-
-		this.builder.configStore.associateRefWithName(
-			resultTypeRef,
-			resultTypeName,
-		);
-	});
+	associateResultType.call(this, fieldRef, resultTypeRef, options.type);
 
 	return fieldRef;
 };
