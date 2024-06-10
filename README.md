@@ -44,6 +44,7 @@ builder.mutationType({
 
 ## Limitation
 
+- The `t.result` only can be used in mutation type.
 - The types that can be created with `t.result` are limited to objects. Array types are not supported.
 
 ## License

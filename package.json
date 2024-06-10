@@ -10,7 +10,7 @@
 		"email": "contact@imch.dev"
 	},
 	"license": "MIT",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"files": [
 		"package.json",
 		"README.md",
@@ -41,16 +41,16 @@
 	],
 	"packageManager": "yarn@4.2.2",
 	"peerDependencies": {
-		"@pothos/core": "^3",
-		"graphql": "^16 || ^17"
+		"@pothos/core": "^3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.0",
 		"@pothos/core": "^3.41.1",
+		"@pothos/plugin-with-input": "^3.10.1",
 		"@total-typescript/tsconfig": "^1.0.4",
 		"graphql": "^16.8.1",
 		"nanobundle": "^2.1.0",
-		"typescript": "^5.4.5",
+		"typescript": "beta",
 		"vitest": "^1.6.0"
 	}
 }

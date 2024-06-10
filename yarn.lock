@@ -498,6 +498,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/plugin-with-input@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "@pothos/plugin-with-input@npm:3.10.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: 10c0/c16daa5610ac2933274619e064abc3586cf7326c5e0ac82fbb579afaa245a0211d7fb67bc0384a62e406609e998c8b0c0de7fe532c1334dfd5ac10432b19453a
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-android-arm-eabi@npm:4.18.0":
   version: 4.18.0
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.18.0"
@@ -1797,10 +1807,11 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:^1.8.0"
     "@pothos/core": "npm:^3.41.1"
+    "@pothos/plugin-with-input": "npm:^3.10.1"
     "@total-typescript/tsconfig": "npm:^1.0.4"
     graphql: "npm:^16.8.1"
     nanobundle: "npm:^2.1.0"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:beta"
     vitest: "npm:^1.6.0"
   peerDependencies:
     "@pothos/core": ^3
@@ -2157,23 +2168,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.4.5":
-  version: 5.4.5
-  resolution: "typescript@npm:5.4.5"
+"typescript@npm:beta":
+  version: 5.5.0-beta
+  resolution: "typescript@npm:5.5.0-beta"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/2954022ada340fd3d6a9e2b8e534f65d57c92d5f3989a263754a78aba549f7e6529acc1921913560a4b816c46dce7df4a4d29f9f11a3dc0d4213bb76d043251e
+  checksum: 10c0/e4b029678d6e77514355a79bb2b30e80784712b58cdb1391e07d2282aefceaff7850edf16814f6b4b9d4f23c84372afdfc6165cb628adc5303274fff8a795ce5
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
-  version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
+"typescript@patch:typescript@npm%3Abeta#optional!builtin<compat/typescript>":
+  version: 5.5.0-beta
+  resolution: "typescript@patch:typescript@npm%3A5.5.0-beta#optional!builtin<compat/typescript>::version=5.5.0-beta&hash=b45daf"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/db2ad2a16ca829f50427eeb1da155e7a45e598eec7b086d8b4e8ba44e5a235f758e606d681c66992230d3fc3b8995865e5fd0b22a2c95486d0b3200f83072ec9
+  checksum: 10c0/665f9f8140409b79ee61a695627842d49430ce944571b44c3fe81c05a0359041f2aa267e5e5639dfdb844da47c7a542f7a534fe301533c846a20c63cd9ff1d53
   languageName: node
   linkType: hard
 
