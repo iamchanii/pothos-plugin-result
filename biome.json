@@ -23,5 +23,14 @@
 			"jsxQuoteStyle": "double",
 			"semicolons": "always"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"include": ["**/*.md"],
+			"formatter": {
+				"indentWidth": 2,
+				"indentStyle": "space"
+			}
+		}
+	]
 }

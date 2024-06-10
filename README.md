@@ -13,7 +13,7 @@ $ yarn add pothos-plugin-result
 ### Setup
 
 ```typescript
-import ResultPlugin from 'pothos-plugin-result';
+import ResultPlugin from "pothos-plugin-result";
 
 const builder = new SchemaBuilder({
   plugins: [ResultPlugin],
@@ -28,24 +28,55 @@ builder.mutationType({
     createPost: t.result({
       type: {
         createdPost: PostRef,
-        allPosts: [PostRef],
-        currentUser: UserRef,
       },
-      nullable: true,
-      resolve: () => ({
-        createdPost: { id: 2, /* ... */ },
-        allPosts: [{ id: 1, /* ... */ }, { id: 2, /* ... */ }],
-        currentUser: { id: 1, /* ... */ }
-      }),
+      args: {
+        title: t.arg.string({ required: true }),
+      },
+      resolve: (_root, { title }) => {
+        return {
+          createdPost: {
+            id: 1,
+            title,
+          },
+        };
+      },
     }),
-  });
+  }),
+});
+```
+
+## Integrations
+
+### With-Input Plugin
+
+```typescript
+builder.mutationType({
+  fields: (t) => ({
+    updatePost: t.resultWithInput({
+      type: {
+        updatedPost: PostRef,
+      },
+      input: {
+        postId: t.input.id({ required: true }),
+        title: t.input.string({ required: true }),
+      },
+      resolve: (_root, { input }) => {
+        return {
+          updatedPost: {
+            id: input.id.toString(),
+            title: input.title,
+          },
+        };
+      },
+    }),
+  }),
 });
 ```
 
 ## Limitation
 
-- The `t.result` only can be used in mutation type.
-- The types that can be created with `t.result` are limited to objects. Array types are not supported.
+- Only can be used in mutation type.
+- The types that can be created are limited to objects. Array types are not supported. Fields contained in the type are nullable.
 
 ## License
 
