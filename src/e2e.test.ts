@@ -2,7 +2,7 @@ import SchemaBuilder from '@pothos/core';
 import { expect, test } from 'vitest';
 import ResultPlugin from './index.js';
 import WithInputPlugin from '@pothos/plugin-with-input';
-import { printSchema } from 'graphql/index.js';
+import { executeSync, parse, printSchema } from 'graphql/index.js';
 
 const builder = new SchemaBuilder({
 	plugins: [ResultPlugin, WithInputPlugin],
@@ -17,48 +17,46 @@ PostRef.implement({
 	}),
 });
 
-const UserRef = builder
-	.objectRef<{ id: string; name: string }>('User')
-	.implement({
-		fields: (t) => ({
-			id: t.exposeID('id'),
-			name: t.exposeString('name'),
+builder.queryType({
+	fields: (t) => ({
+		post: t.field({
+			type: PostRef,
+			resolve: () => ({ id: '1', title: 'Hello World' }),
 		}),
-	});
+	}),
+});
 
 builder.mutationType({
 	fields: (t) => ({
-		hello: t.result({
+		createPost: t.result({
 			type: {
-				currentUser: UserRef,
-				affectedPosts: [PostRef],
+				createdPost: PostRef,
 			},
-			resolve: () => {
+			args: {
+				title: t.arg.string({ required: true }),
+			},
+			resolve: (_root, { title }) => {
 				return {
-					currentUser: {
+					createdPost: {
 						id: '1',
-						name: '',
+						title,
 					},
-					affectedPosts: [
-						{ id: '1', title: '' },
-						{ id: '2', title: '' },
-					],
 				};
 			},
 		}),
 
-		world: t.resultWithInput({
+		updatePost: t.resultWithInput({
 			type: {
 				updatedPost: PostRef,
 			},
 			input: {
-				id: t.input.id({ required: true }),
+				postId: t.input.id({ required: true }),
 				title: t.input.string({ required: true }),
 			},
 			resolve: (_root, { input }) => {
 				return {
 					updatedPost: {
-						id: input.id.toString(),
+						id: input.postId.toString(),
 						title: input.title,
 					},
 				};
@@ -72,21 +70,20 @@ test('print schema', () => {
 
 	expect(printSchema(schema)).toMatchInlineSnapshot(`
 		"type Mutation {
-		  hello: MutationHelloResult!
-		  world(input: MutationWorldInput!): MutationWorldResult!
+		  createPost(title: String!): MutationCreatePostResult!
+		  updatePost(input: MutationUpdatePostInput!): MutationUpdatePostResult!
 		}
 
-		type MutationHelloResult {
-		  affectedPosts: [Post]
-		  currentUser: User
+		type MutationCreatePostResult {
+		  createdPost: Post
 		}
 
-		input MutationWorldInput {
-		  id: ID!
+		input MutationUpdatePostInput {
+		  postId: ID!
 		  title: String!
 		}
 
-		type MutationWorldResult {
+		type MutationUpdatePostResult {
 		  updatedPost: Post
 		}
 
@@ -95,9 +92,49 @@ test('print schema', () => {
 		  title: String!
 		}
 
-		type User {
-		  id: ID!
-		  name: String!
+		type Query {
+		  post: Post!
 		}"
+	`);
+});
+
+test('execute', () => {
+	const schema = builder.toSchema();
+	const document = parse(/* GraphQL */ `
+		mutation {
+			createPost(title: "Hello World") {
+				createdPost {
+					id
+					title
+				}
+			}
+			updatePost(input: { postId: "1", title: "Hello World 2" }) {
+				updatedPost {
+					id
+					title
+				}
+			}
+		}
+	`);
+
+	const result = executeSync({ schema, document });
+
+	expect(result).toMatchInlineSnapshot(`
+		{
+		  "data": {
+		    "createPost": {
+		      "createdPost": {
+		        "id": "1",
+		        "title": "Hello World",
+		      },
+		    },
+		    "updatePost": {
+		      "updatedPost": {
+		        "id": "1",
+		        "title": "Hello World 2",
+		      },
+		    },
+		  },
+		}
 	`);
 });

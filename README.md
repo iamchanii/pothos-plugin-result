@@ -35,23 +35,14 @@ builder.mutationType({
       resolve: (_root, { title }) => {
         return {
           createdPost: {
-            id: 1,
+            id: "1",
             title,
           },
         };
       },
     }),
-  }),
-});
-```
 
-## Integrations
-
-### With-Input Plugin
-
-```typescript
-builder.mutationType({
-  fields: (t) => ({
+    // @pothos/plugin-with-input plugin required.
     updatePost: t.resultWithInput({
       type: {
         updatedPost: PostRef,
@@ -63,7 +54,7 @@ builder.mutationType({
       resolve: (_root, { input }) => {
         return {
           updatedPost: {
-            id: input.id.toString(),
+            id: input.postId.toString(),
             title: input.title,
           },
         };
