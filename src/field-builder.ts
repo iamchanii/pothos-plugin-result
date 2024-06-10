@@ -54,9 +54,11 @@ fieldBuilderProto.result = function (options) {
 	return fieldRef;
 };
 
+// @ts-ignore
 fieldBuilderProto.resultWithInput = function resultWithInput(options) {
 	const resultTypeRef = this.builder.objectRef('Unnamed result type');
 
+	// @ts-ignore
 	const fieldRef = this.fieldWithInput({
 		...options,
 		type: resultTypeRef as never,
@@ -71,6 +73,7 @@ fieldBuilderProto.resultWithInput = function resultWithInput(options) {
 
 				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
 					fields[fieldName] = t.expose(fieldName as never, {
+						// @ts-ignore
 						type: fieldRef,
 						nullable:
 							this.builder.defaultFieldNullability || Array.isArray(fieldRef)

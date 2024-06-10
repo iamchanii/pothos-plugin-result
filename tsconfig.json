@@ -1,6 +1,15 @@
 {
-	"extends": "@total-typescript/tsconfig/bundler/no-dom/library",
 	"compilerOptions": {
-		"outDir": "dist"
+		"target": "ESNext",
+		"lib": ["ESNext"],
+		"module": "Node16",
+		"moduleResolution": "NodeNext",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"resolveJsonModule": true,
+		"outDir": "./dist",
+		"skipLibCheck": true
 	}
 }
