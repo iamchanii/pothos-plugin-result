@@ -64,6 +64,28 @@ builder.mutationType({
 });
 ```
 
+You can get below schema:
+
+```graphql
+type Mutation {
+  createPost(title: String!): MutationCreatePostResult!
+  updatePost(input: MutationUpdatePostInput!): MutationUpdatePostResult!
+}
+
+type MutationCreatePostResult {
+  createdPost: Post
+}
+
+input MutationUpdatePostInput {
+  postId: ID!
+  title: String!
+}
+
+type MutationUpdatePostResult {
+  updatedPost: Post
+}
+```
+
 ## Limitation
 
 - Only can be used in mutation type.
