@@ -10,7 +10,7 @@
 		"email": "contact@imch.dev"
 	},
 	"license": "MIT",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"files": [
 		"package.json",
 		"README.md",
@@ -46,6 +46,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.0",
 		"@pothos/core": "^3.41.1",
+		"@pothos/plugin-errors": "^3.11.1",
 		"@pothos/plugin-with-input": "^3.10.1",
 		"@total-typescript/tsconfig": "^1.0.4",
 		"graphql": "^16.8.1",

@@ -22,16 +22,19 @@ function associateResultType(
 	this: typeof fieldBuilderProto,
 	fieldRef: FieldRef<unknown>,
 	resultTypeRef: ImplementableObjectRef<SchemaTypes, unknown, unknown>,
-	type: ResultTypeParam<SchemaTypes>,
+	options: { type: ResultTypeParam<SchemaTypes> },
 ) {
 	this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
-		const resultTypeName = `${this.typename}${capitalize(fieldConfig.name)}Result`;
+		const resultTypeName =
+			'errors' in options
+				? `${capitalize(fieldConfig.name)}Result`
+				: `${this.typename}${capitalize(fieldConfig.name)}Result`;
 
 		this.builder.objectRef(resultTypeName).implement({
 			fields: (t) => {
 				const fields: Record<string, FieldRef> = {};
 
-				for (const [fieldName, fieldRef] of Object.entries(type)) {
+				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
 					fields[fieldName] = t.expose(fieldName as never, {
 						type: fieldRef,
 						nullable: Array.isArray(fieldRef)
@@ -59,7 +62,7 @@ fieldBuilderProto.result = function (options) {
 		type: resultTypeRef as never,
 	} as never);
 
-	associateResultType.call(this, fieldRef, resultTypeRef, options.type);
+	associateResultType.call(this, fieldRef, resultTypeRef, options);
 
 	return fieldRef;
 };
@@ -74,7 +77,7 @@ fieldBuilderProto.resultWithInput = function resultWithInput(options) {
 		type: resultTypeRef as never,
 	} as never);
 
-	associateResultType.call(this, fieldRef, resultTypeRef, options.type);
+	associateResultType.call(this, fieldRef, resultTypeRef, options);
 
 	return fieldRef;
 };

@@ -1,11 +1,23 @@
 import SchemaBuilder from '@pothos/core';
+import ErrorsPlugin from '@pothos/plugin-errors';
+import WithInputPlugin from '@pothos/plugin-with-input';
+import { execute, parse, printSchema } from 'graphql/index.js';
 import { expect, test } from 'vitest';
 import ResultPlugin from './index.js';
-import WithInputPlugin from '@pothos/plugin-with-input';
-import { executeSync, parse, printSchema } from 'graphql/index.js';
 
 const builder = new SchemaBuilder({
-	plugins: [ResultPlugin, WithInputPlugin],
+	plugins: [ResultPlugin, WithInputPlugin, ErrorsPlugin],
+});
+
+const ErrorInterface = builder.interfaceRef<Error>('Error').implement({
+	fields: (t) => ({
+		message: t.exposeString('message'),
+	}),
+});
+
+builder.objectType(Error, {
+	name: 'BaseError',
+	interfaces: [ErrorInterface],
 });
 
 const PostRef = builder.objectRef<{ id: string; title: string }>('Post');
@@ -62,6 +74,21 @@ builder.mutationType({
 				};
 			},
 		}),
+
+		deletePost: t.result({
+			type: {
+				deletePostId: 'ID',
+			},
+			args: {
+				postId: t.arg.id({ required: true }),
+			},
+			errors: {
+				types: [Error],
+			},
+			resolve: (_root, { postId }) => {
+				throw new Error(`Post with ID ${postId} not found`);
+			},
+		}),
 	}),
 });
 
@@ -69,13 +96,32 @@ test('print schema', () => {
 	const schema = builder.toSchema();
 
 	expect(printSchema(schema)).toMatchInlineSnapshot(`
-		"type Mutation {
+		"type BaseError implements Error {
+		  message: String!
+		}
+
+		type DeletePostResult {
+		  deletePostId: ID
+		}
+
+		interface Error {
+		  message: String!
+		}
+
+		type Mutation {
 		  createPost(title: String!): MutationCreatePostResult!
+		  deletePost(postId: ID!): MutationDeletePostResult!
 		  updatePost(input: MutationUpdatePostInput!): MutationUpdatePostResult!
 		}
 
 		type MutationCreatePostResult {
 		  createdPost: Post
+		}
+
+		union MutationDeletePostResult = BaseError | MutationDeletePostSuccess
+
+		type MutationDeletePostSuccess {
+		  data: DeletePostResult!
 		}
 
 		input MutationUpdatePostInput {
@@ -98,7 +144,7 @@ test('print schema', () => {
 	`);
 });
 
-test('execute', () => {
+test('execute', async () => {
 	const schema = builder.toSchema();
 	const document = parse(/* GraphQL */ `
 		mutation {
@@ -114,10 +160,15 @@ test('execute', () => {
 					title
 				}
 			}
+			deletePost(postId: "1") {
+				... on BaseError {
+					message
+				}
+			}
 		}
 	`);
 
-	const result = executeSync({ schema, document });
+	const result = await execute({ schema, document });
 
 	expect(result).toMatchInlineSnapshot(`
 		{
@@ -127,6 +178,9 @@ test('execute', () => {
 		        "id": "1",
 		        "title": "Hello World",
 		      },
+		    },
+		    "deletePost": {
+		      "message": "Post with ID 1 not found",
 		    },
 		    "updatePost": {
 		      "updatedPost": {
