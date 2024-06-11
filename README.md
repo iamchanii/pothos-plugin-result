@@ -64,7 +64,7 @@ builder.mutationType({
 });
 ```
 
-You can get below schema:
+You can get the GraphQL schema as output below:
 
 ```graphql
 type Mutation {

@@ -10,6 +10,8 @@ import type {
 	SchemaTypes,
 } from '@pothos/core';
 
+export type Nullable<T> = T | null | undefined;
+
 export type ResultTypeParam<Types extends SchemaTypes> = Record<
 	string,
 	OutputType<Types> | [OutputType<Types>]
@@ -20,8 +22,8 @@ export type ResultOutputShape<
 	Param extends ResultTypeParam<Types>,
 > = {
 	[Key in keyof Param]: Param[Key] extends [infer T]
-		? OutputShape<Types, T>[]
-		: OutputShape<Types, Param[Key]>;
+		? Nullable<OutputShape<Types, T>[]>
+		: Nullable<OutputShape<Types, Param[Key]>>;
 };
 
 export type ShapeFromTypeParam<
