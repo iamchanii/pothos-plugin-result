@@ -1,8 +1,7 @@
 import type {
-	FieldKind,
+	ArgumentRef,
 	FieldNullability,
 	InputFieldMap,
-	InputFieldRef,
 	InputShapeFromFields,
 	OutputShape,
 	OutputType,
@@ -68,9 +67,9 @@ export type ResultWithInputOptions<
 	Types extends SchemaTypes,
 	Type extends ResultTypeParam<Types>,
 	Nullable extends boolean,
-	Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+	Args extends InputFieldMap,
 	ResolveReturnShape,
-	Fields extends Record<string, InputFieldRef<unknown, 'InputObject'>>,
+	Fields extends InputFieldMap,
 	InputName extends string,
 	ArgRequired extends boolean,
 > = Omit<
@@ -79,21 +78,24 @@ export type ResultWithInputOptions<
 		Type,
 		Nullable,
 		Args & {
-			[K in InputName]:
-				| InputFieldRef<InputShapeFromFields<Fields>>
-				| (true extends ArgRequired ? never : null | undefined);
+			[K in InputName]: ArgumentRef<
+				Types,
+				| InputShapeFromFields<Fields>
+				| (true extends ArgRequired ? never : null | undefined)
+			>;
 		},
 		ResolveReturnShape
 	>,
 	'args'
 > &
-	// @ts-ignore
 	PothosSchemaTypes.FieldWithInputBaseOptions<
 		Types,
 		Args & {
-			[K in InputName]:
-				| InputFieldRef<InputShapeFromFields<Fields>>
-				| (true extends ArgRequired ? never : null | undefined);
+			[K in InputName]: ArgumentRef<
+				Types,
+				| InputShapeFromFields<Fields>
+				| (true extends ArgRequired ? never : null | undefined)
+			>;
 		},
 		Fields,
 		InputName,

@@ -97,7 +97,7 @@ test('print schema', () => {
 
 	expect(printSchema(schema)).toMatchInlineSnapshot(`
 		"type BaseError implements Error {
-		  message: String!
+		  message: String
 		}
 
 		type DeletePostResult {
@@ -105,13 +105,13 @@ test('print schema', () => {
 		}
 
 		interface Error {
-		  message: String!
+		  message: String
 		}
 
 		type Mutation {
-		  createPost(title: String!): MutationCreatePostResult!
-		  deletePost(postId: ID!): MutationDeletePostResult!
-		  updatePost(input: MutationUpdatePostInput!): MutationUpdatePostResult!
+		  createPost(title: String!): MutationCreatePostResult
+		  deletePost(postId: ID!): MutationDeletePostResult
+		  updatePost(input: MutationUpdatePostInput!): MutationUpdatePostResult
 		}
 
 		type MutationCreatePostResult {
@@ -134,12 +134,12 @@ test('print schema', () => {
 		}
 
 		type Post {
-		  id: ID!
-		  title: String!
+		  id: ID
+		  title: String
 		}
 
 		type Query {
-		  post: Post!
+		  post: Post
 		}"
 	`);
 });

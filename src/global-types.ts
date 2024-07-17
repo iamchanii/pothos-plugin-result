@@ -2,7 +2,6 @@ import type {
 	FieldKind,
 	FieldRef,
 	InputFieldMap,
-	InputFieldRef,
 	PluginName,
 	SchemaTypes,
 } from '@pothos/core';
@@ -33,18 +32,15 @@ declare global {
 				ResolveReturnShape,
 			>(
 				options: ResultOptions<Types, Type, Nullable, Args, ResolveReturnShape>,
-			) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>;
+			) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>;
 
 			resultWithInput: 'withInput' extends PluginName
 				? <
 						Type extends ResultTypeParam<Types>,
 						Nullable extends boolean,
-						Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+						Args extends InputFieldMap,
 						ResolveReturnShape,
-						Fields extends Record<
-							string,
-							InputFieldRef<unknown, 'InputObject'>
-						>,
+						Fields extends InputFieldMap,
 						InputName extends string,
 						ArgRequired extends boolean,
 					>(
@@ -58,8 +54,16 @@ declare global {
 							InputName,
 							ArgRequired
 						>,
-					) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>
+					) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>
 				: '@pothos/plugin-with-input is required to use this method';
 		}
+
+		interface FieldWithInputBaseOptions<
+			Types extends SchemaTypes,
+			Args extends InputFieldMap,
+			Fields extends InputFieldMap,
+			InputName extends string,
+			ArgRequired extends boolean,
+		> {}
 	}
 }

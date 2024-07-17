@@ -20,19 +20,19 @@ function capitalize(s: string) {
 
 function associateResultType(
 	this: typeof fieldBuilderProto,
-	fieldRef: FieldRef<unknown>,
+	fieldRef: FieldRef<SchemaTypes, unknown>,
 	resultTypeRef: ImplementableObjectRef<SchemaTypes, unknown, unknown>,
 	options: { type: ResultTypeParam<SchemaTypes> },
 ) {
-	this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
+	fieldRef.onFirstUse((fieldConfig) => {
 		const resultTypeName =
 			'errors' in options
 				? `${capitalize(fieldConfig.name)}Result`
-				: `${this.typename}${capitalize(fieldConfig.name)}Result`;
+				: `Mutation${capitalize(fieldConfig.name)}Result`;
 
 		this.builder.objectRef(resultTypeName).implement({
 			fields: (t) => {
-				const fields: Record<string, FieldRef> = {};
+				const fields: Record<string, FieldRef<SchemaTypes>> = {};
 
 				for (const [fieldName, fieldRef] of Object.entries(options.type)) {
 					fields[fieldName] = t.expose(fieldName as never, {
@@ -47,7 +47,7 @@ function associateResultType(
 			},
 		});
 
-		this.builder.configStore.associateRefWithName(
+		this.builder.configStore.associateParamWithRef(
 			resultTypeRef,
 			resultTypeName,
 		);
